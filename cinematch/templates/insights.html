@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}How Scores Work – CineMatch Bollywood{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-3">
+            Transparent Scoring Guide
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold mb-3">How Recommendation Scores Work</h1>
+        <p class="text-cine-soft text-base sm:text-lg">
+            CineMatch shows a simple percentage for every recommended Bollywood movie. Here is what that percentage means—and how it is calculated in plain English.
+        </p>
+    </div>
+
+    <!-- Relative Score vs Probability -->
+    <section class="mb-10">
+        <div class="glass rounded-2xl p-6 border border-amber-400/35">
+            <h2 class="font-display text-xl font-bold text-amber-300 mb-2">Important: Relative Match Score vs. Probability</h2>
+            <p class="text-gray-200 text-sm sm:text-base leading-relaxed">
+                The percentage next to each movie is a <strong>Relative Match Score (0–100%)</strong>, <strong>not a guaranteed probability</strong> that you will enjoy the movie.
+                Because our database has only a small number of ratings per Bollywood film (1 to 10 likes), a raw 1-out-of-1 match would falsely look like "100% certainty."
+                Instead, CineMatch smooths small counts and combines viewer overlap, genre similarity, and dataset popularity into a balanced comparison score.
+            </p>
+        </div>
+    </section>
+
+    <!-- Step 1: Viewer Overlap -->
+    <section class="mb-10 space-y-4">
+        <h2 class="font-display text-2xl font-bold flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-cine-accent/20 text-cine-accent flex items-center justify-center text-sm font-bold">1</span>
+            Viewer Overlap (Shared Likes)
+        </h2>
+        <div class="glass rounded-2xl p-6 border border-white/10 space-y-4">
+            <p class="text-cine-soft text-sm sm:text-base">
+                First, CineMatch checks our database to see if people who rated your selected movie <strong>4.0 stars or higher</strong> also positively rated another Bollywood movie.
+            </p>
+            <div class="bg-cine-900 rounded-xl p-4 font-mono text-xs sm:text-sm text-center border border-white/10">
+                Smoothed Viewer Score = <span class="text-amber-300">Shared Viewers</span> / (<span class="text-cine-accent">Total Viewers of Movie A</span> + 2)
+            </div>
+            <p class="text-xs sm:text-sm text-cine-soft">
+                Adding <code class="text-white">+ 2</code> (Laplace smoothing) keeps single-user overlaps modest (e.g., 1 of 1 = 33.3% rather than an exaggerated 100%).
+            </p>
+        </div>
+
+        {% if example_idiots_pk or example_lagaan_monsoon %}
+        <div class="grid sm:grid-cols-2 gap-4">
+            {% if example_idiots_pk %}
+            <div class="glass rounded-2xl p-5 border border-cine-accent/25">
+                <div class="text-xs font-semibold text-amber-300 uppercase tracking-wider mb-1">Real Database Example</div>
+                <div class="font-bold text-white mb-2">3 Idiots → PK</div>
+                <ul class="text-xs sm:text-sm text-cine-soft space-y-1">
+                    <li>• Viewers who liked 3 Idiots: <span class="text-white">{{ example_idiots_pk.count_a }}</span></li>
+                    <li>• Viewers who liked both: <span class="text-white">{{ example_idiots_pk.common }}</span></li>
+                    <li>• Raw conditional overlap: <span class="text-white">{{ example_idiots_pk.confidence_pct }}%</span></li>
+                    <li>• Smoothed viewer signal: <span class="text-amber-300 font-semibold">{{ example_idiots_pk.smoothed_confidence_pct }}%</span></li>
+                </ul>
+            </div>
+            {% endif %}
+            {% if example_lagaan_monsoon %}
+            <div class="glass rounded-2xl p-5 border border-cine-accent/25">
+                <div class="text-xs font-semibold text-amber-300 uppercase tracking-wider mb-1">Real Database Example</div>
+                <div class="font-bold text-white mb-2">Lagaan → Monsoon Wedding</div>
+                <ul class="text-xs sm:text-sm text-cine-soft space-y-1">
+                    <li>• Viewers who liked Lagaan: <span class="text-white">{{ example_lagaan_monsoon.count_a }}</span></li>
+                    <li>• Viewers who liked both: <span class="text-white">{{ example_lagaan_monsoon.common }}</span></li>
+                    <li>• Raw conditional overlap: <span class="text-white">{{ example_lagaan_monsoon.confidence_pct }}%</span></li>
+                    <li>• Smoothed viewer signal: <span class="text-amber-300 font-semibold">{{ example_lagaan_monsoon.smoothed_confidence_pct }}%</span></li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Step 2: Genre Match & Popularity -->
+    <section class="mb-10">
+        <h2 class="font-display text-2xl font-bold mb-4 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-cine-accent/20 text-cine-accent flex items-center justify-center text-sm font-bold">2</span>
+            Genre Match &amp; Popularity Balance
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+            <div class="glass rounded-2xl p-5 border border-white/10">
+                <h3 class="font-display font-bold text-lg text-amber-300 mb-2">Genre Similarity</h3>
+                <p class="text-sm text-cine-soft">
+                    Every Bollywood movie has genres like <em>Comedy</em>, <em>Drama</em>, <em>Romance</em>, or <em>Musical</em>.
+                    CineMatch measures how many genres a candidate movie shares with your selected movies (Jaccard similarity).
+                </p>
+            </div>
+            <div class="glass rounded-2xl p-5 border border-white/10">
+                <h3 class="font-display font-bold text-lg text-amber-300 mb-2">When Viewer Overlap Is Zero</h3>
+                <p class="text-sm text-cine-soft">
+                    If a movie (such as <em>Munna bhai M.B.B.S.</em>) has 0 recorded user ratings in the dataset, CineMatch falls back cleanly to Genre Similarity + Bollywood Popularity so you still get helpful Bollywood matches without any unrelated Hollywood movies.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step 3: How Total Score is Combined -->
+    <section>
+        <h2 class="font-display text-2xl font-bold mb-4 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-cine-accent/20 text-cine-accent flex items-center justify-center text-sm font-bold">3</span>
+            Combining Everything Into One Score
+        </h2>
+        <div class="glass rounded-2xl p-6 border border-white/10 text-sm text-cine-soft space-y-3">
+            <p>When shared viewer ratings exist between your picks and a candidate movie, CineMatch starts from a viewer-overlap tier and combines:</p>
+            <div class="bg-cine-900 rounded-xl p-4 font-mono text-xs sm:text-sm text-white border border-white/10">
+                Match Score = 32% Base Overlap + 38% Smoothed Viewer Score + 20% Genre Match + 5% Popularity + 5% Hindi Focus
+            </div>
+            <p>When no shared viewer ratings exist yet, the score relies on Genre Match (65%), Popularity (20%), and Hindi Focus (15%) scaled to at most 45%—ensuring movies backed by real viewer overlap always rank higher than genre-only matches.</p>
+        </div>
+    </section>
+</div>
+{% endblock %}

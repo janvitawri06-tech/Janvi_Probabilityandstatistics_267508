@@ -1,0 +1,116 @@
+/* CineMatch Bollywood Edition - Custom Styles */
+
+body {
+    background: radial-gradient(circle at top center, rgba(229, 9, 20, 0.08), transparent 45%),
+                radial-gradient(circle at 85% 20%, rgba(245, 197, 24, 0.06), transparent 35%),
+                #0a0a0f;
+}
+
+.glass {
+    background: rgba(22, 24, 34, 0.78);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.card-hover {
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.22s ease,
+                box-shadow 0.22s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    border-color: rgba(229, 9, 20, 0.45);
+    box-shadow: 0 14px 36px -14px rgba(229, 9, 20, 0.28);
+}
+
+.spotlight-card {
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.14), rgba(245, 197, 24, 0.08) 55%, rgba(22, 24, 34, 0.92));
+    border: 1px solid rgba(245, 197, 24, 0.45);
+    box-shadow: 0 18px 48px -18px rgba(245, 197, 24, 0.22);
+}
+
+/* Graceful cinema poster frame when poster image is not present in dataset */
+.poster-frame {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(155deg, #24101a 0%, #151726 55%, #1e1912 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.poster-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(245, 197, 24, 0.16), transparent 60%),
+                radial-gradient(circle at 80% 85%, rgba(229, 9, 20, 0.18), transparent 55%);
+    pointer-events: none;
+}
+
+.poster-frame-top {
+    background: linear-gradient(155deg, #3a121b 0%, #1d1829 55%, #2d210f 100%);
+    border-color: rgba(245, 197, 24, 0.4);
+}
+
+.progress-track {
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.progress-fill-primary {
+    background: linear-gradient(90deg, #e50914 0%, #f59e0b 65%, #f5c518 100%);
+    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-fill-secondary {
+    background: linear-gradient(90deg, #3b82f6 0%, #38bdf8 100%);
+    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.metric-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-dropdown {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #2a2e42;
+    border-radius: 3px;
+}
+
+.selected-chip {
+    animation: chipIn 0.18s ease-out;
+}
+
+@keyframes chipIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.rec-card {
+    animation: fadeUp 0.36s ease-out both;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-link.active {
+    color: #fff;
+    background: rgba(229, 9, 20, 0.18);
+    border: 1px solid rgba(229, 9, 20, 0.32);
+}

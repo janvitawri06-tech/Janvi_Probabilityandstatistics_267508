@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}About – CineMatch Bollywood{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-3">
+            About This Project
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold">About CineMatch Bollywood</h1>
+    </div>
+
+    <div class="space-y-6 text-cine-soft">
+        <p class="text-base sm:text-lg leading-relaxed">
+            <strong class="text-white">CineMatch Bollywood</strong> is a user-friendly movie recommendation website focused on Hindi and Indian cinema.
+            Select Bollywood films you enjoy, and the system compares real viewer likes and movie genres from the existing SQLite database to recommend your best matches.
+        </p>
+
+        <div class="glass rounded-2xl p-6 border border-white/10">
+            <h2 class="font-display text-xl font-bold text-white mb-3">What Makes It Easy to Use</h2>
+            <ul class="space-y-2 list-disc list-inside text-sm sm:text-base">
+                <li><strong class="text-white">Bollywood-only filtering:</strong> Unrelated Hollywood movies are excluded from search and recommendations.</li>
+                <li><strong class="text-white">Clear visual comparisons:</strong> Spot the #1 highest-ranked pick immediately and compare percentages in a chart and table.</li>
+                <li><strong class="text-white">Honest explanations:</strong> Every recommendation explains in plain English why it matched, and never pretends a similarity score is a guaranteed probability.</li>
+            </ul>
+        </div>
+
+        <div class="glass rounded-2xl p-6 border border-white/10">
+            <h2 class="font-display text-xl font-bold text-white mb-3">Dataset &amp; Data Honesty</h2>
+            <p class="text-sm sm:text-base mb-3">
+                CineMatch uses the existing <strong class="text-white">MovieLens Latest Small</strong> SQLite database without deleting or altering any original records:
+            </p>
+            <ul class="space-y-1.5 text-sm">
+                <li>• <strong class="text-white">{{ meta.bollywood_movies }}</strong> Bollywood &amp; Indian cinema titles available in the database</li>
+                <li>• <strong class="text-white">{{ meta.bollywood_positive }}</strong> positive ratings (≥ 4.0★) recorded across Bollywood &amp; Indian titles</li>
+                <li>• <strong class="text-white">{{ "{:,}".format(meta.total_movies) }}</strong> total movies and <strong class="text-white">{{ meta.total_users }}</strong> users in the full underlying database</li>
+            </ul>
+            <p class="text-xs sm:text-sm mt-4 text-amber-300/90">
+                Note on missing data: Because the original database only stores movie IDs, titles (with release years), genres, and positive preference counts, poster image URLs and average star ratings are not present in the dataset. Rather than inventing fake posters or ratings, CineMatch displays clean cinema poster cards and exact positive rating counts from the database.
+            </p>
+        </div>
+
+        <div class="glass rounded-2xl p-6 border border-white/10">
+            <h2 class="font-display text-xl font-bold text-white mb-3">Technology Stack</h2>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <div>Python &amp; Flask</div><div class="text-white">Web server &amp; JSON APIs</div>
+                <div>SQLite</div><div class="text-white">Movie &amp; preference queries</div>
+                <div>HTML &amp; Tailwind CSS</div><div class="text-white">Responsive cinema UI</div>
+                <div>JavaScript</div><div class="text-white">Live search, charts &amp; comparisons</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

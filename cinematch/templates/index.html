@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}CineMatch Bollywood – Discover Hindi Movies{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+    <!-- Hero & Simple Instructions -->
+    <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-4">
+            Bollywood &amp; Indian Cinema Recommendations
+        </div>
+        <h1 class="font-display text-3xl sm:text-5xl font-bold tracking-tight mb-4">
+            Find your next <span class="text-cine-accent">Bollywood favorite</span>
+        </h1>
+        <p class="text-cine-soft text-base sm:text-lg leading-relaxed">
+            Pick one or more Bollywood movies you already love. We compare real viewer likes and movie genres
+            from our database to rank similar Hindi &amp; Indian movies with clear match percentages.
+        </p>
+    </div>
+
+    <!-- 3-Step Guide -->
+    <div class="grid sm:grid-cols-3 gap-3 max-w-4xl mx-auto mb-10">
+        <div class="glass rounded-xl p-4 border border-white/10 flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-cine-accent/20 text-cine-accent font-display font-bold text-sm flex items-center justify-center shrink-0">1</span>
+            <div>
+                <div class="font-semibold text-sm text-white">Search or Browse</div>
+                <p class="text-xs text-cine-soft mt-0.5">Type a Bollywood title (like <em>3 Idiots</em> or <em>Lagaan</em>) or open the full list.</p>
+            </div>
+        </div>
+        <div class="glass rounded-xl p-4 border border-white/10 flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-cine-accent/20 text-cine-accent font-display font-bold text-sm flex items-center justify-center shrink-0">2</span>
+            <div>
+                <div class="font-semibold text-sm text-white">Pick Multiple Movies</div>
+                <p class="text-xs text-cine-soft mt-0.5">Select as many movies as you want and remove any pick anytime.</p>
+            </div>
+        </div>
+        <div class="glass rounded-xl p-4 border border-white/10 flex items-start gap-3">
+            <span class="w-7 h-7 rounded-lg bg-cine-accent/20 text-cine-accent font-display font-bold text-sm flex items-center justify-center shrink-0">3</span>
+            <div>
+                <div class="font-semibold text-sm text-white">Compare Top Matches</div>
+                <p class="text-xs text-cine-soft mt-0.5">See the #1 top pick, visual chart, percentages, and plain-English reasons.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search, Browse & Selection Card -->
+    <div class="max-w-4xl mx-auto glass rounded-2xl p-5 sm:p-7 border border-white/10 mb-10 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <label for="movie-search" class="font-display font-semibold text-base sm:text-lg text-white">
+                Step 1: Choose Bollywood Movies You Like
+            </label>
+            <button id="toggle-catalog-btn" type="button" aria-expanded="false"
+                class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-amber-300 border border-amber-400/30 transition">
+                Browse All {{ meta.bollywood_movies }} Bollywood Movies
+            </button>
+        </div>
+
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-cine-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <input
+                id="movie-search"
+                type="text"
+                placeholder="Search Bollywood movies… e.g. 3 Idiots, Lagaan, PK, Golmaal, Taare Zameen Par"
+                autocomplete="off"
+                class="w-full pl-12 pr-4 py-3.5 bg-cine-900/90 border border-white/15 rounded-xl text-white placeholder-cine-soft focus:outline-none focus:ring-2 focus:ring-cine-accent/60 focus:border-cine-accent text-base"
+            >
+            <div id="search-results" class="absolute z-40 w-full mt-2 glass rounded-xl shadow-2xl search-dropdown scrollbar-thin hidden border border-white/15"></div>
+        </div>
+
+        <!-- Collapsible Full Bollywood Catalog Browser -->
+        <div id="catalog-panel" class="hidden mt-5 pt-5 border-t border-white/10">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h2 class="text-sm font-semibold text-white">
+                    Available Bollywood &amp; Indian Movies in Database ({{ bollywood_movies|length }})
+                </h2>
+                <span class="text-xs text-cine-soft">Click any movie below to select or unselect it</span>
+            </div>
+            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-80 overflow-y-auto scrollbar-thin pr-1">
+                {% for m in bollywood_movies %}
+                <button type="button"
+                    data-catalog-id="{{ m.movieId }}"
+                    data-movie-json='{{ m|tojson }}'
+                    class="text-left p-3 rounded-xl bg-cine-900/80 border border-white/10 hover:border-cine-accent/50 transition flex items-center justify-between gap-2.5">
+                    <div class="min-w-0">
+                        <div class="font-medium text-sm text-white truncate">
+                            {{ m.display_title }}
+                            {% if m.release_year %}<span class="text-xs text-cine-soft">({{ m.release_year }})</span>{% endif %}
+                        </div>
+                        <div class="text-[11px] text-cine-soft truncate mt-0.5">
+                            {{ m.genre_list[:2]|join(' · ') if m.genre_list else 'Genre N/A' }} · {{ m.pos_count }} likes
+                        </div>
+                    </div>
+                    <span class="catalog-select-state text-xs font-medium text-cine-soft shrink-0">+ Add</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Selected Movies List -->
+        <div class="mt-6 pt-5 border-t border-white/10">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-white">Your Selected Movies</span>
+                    <span id="selected-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-cine-accent/25 text-white">0</span>
+                </div>
+                <span class="text-xs text-cine-soft">Click × on any movie to remove it</span>
+            </div>
+
+            <div id="empty-selection-hint" class="p-4 rounded-xl bg-cine-900/60 border border-dashed border-white/15 text-sm text-cine-soft text-center">
+                No movies selected yet. Search above, browse all movies, or try a popular Bollywood combination below.
+            </div>
+            <div id="selected-movies" class="flex flex-wrap gap-2.5 mt-2"></div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mt-6 pt-5 border-t border-white/10">
+            <div class="flex items-center gap-2.5">
+                <label for="top-n" class="text-sm text-cine-soft">Show top</label>
+                <select id="top-n" class="bg-cine-900 border border-white/15 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cine-accent/50">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                </select>
+                <span class="text-sm text-cine-soft">Bollywood recommendations</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="clear-btn" type="button" disabled
+                    class="px-4 py-2.5 rounded-xl text-sm font-medium text-cine-soft hover:text-white hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    Clear All
+                </button>
+                <button id="recommend-btn" type="button" disabled
+                    class="px-6 py-2.5 rounded-xl bg-cine-accent hover:bg-red-600 text-white font-semibold text-sm shadow-lg shadow-red-900/30 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Find My Bollywood Matches
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Combos -->
+    {% set by_id = {} %}
+    {% for bm in bollywood_movies %}{% set _ = by_id.update({bm.movieId: bm}) %}{% endfor %}
+    <div id="examples" class="max-w-4xl mx-auto mb-10">
+        <h2 class="text-center text-cine-soft text-xs font-semibold mb-4 uppercase tracking-wider">
+            Not sure where to start? Try a popular Bollywood combination
+        </h2>
+        <div class="flex flex-wrap justify-center gap-3">
+            {% if 73881 in by_id and 57183 in by_id %}
+            <button type="button" class="example-btn px-4 py-2.5 rounded-full glass text-sm hover:border-amber-400/50 transition"
+                data-movies-json='{{ [by_id[73881], by_id[57183]]|tojson }}'>
+                3 Idiots + Taare Zameen Par
+            </button>
+            {% endif %}
+            {% if 135777 in by_id and 134334 in by_id %}
+            <button type="button" class="example-btn px-4 py-2.5 rounded-full glass text-sm hover:border-amber-400/50 transition"
+                data-movies-json='{{ [by_id[135777], by_id[134334]]|tojson }}'>
+                Golmaal + Phir Hera Pheri
+            </button>
+            {% endif %}
+            {% if 6776 in by_id and 5135 in by_id %}
+            <button type="button" class="example-btn px-4 py-2.5 rounded-full glass text-sm hover:border-amber-400/50 transition"
+                data-movies-json='{{ [by_id[6776], by_id[5135]]|tojson }}'>
+                Lagaan + Monsoon Wedding
+            </button>
+            {% endif %}
+            {% if 120138 in by_id and 73881 in by_id %}
+            <button type="button" class="example-btn px-4 py-2.5 rounded-full glass text-sm hover:border-amber-400/50 transition"
+                data-movies-json='{{ [by_id[120138], by_id[73881]]|tojson }}'>
+                PK + 3 Idiots
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden text-center py-14">
+        <div class="inline-flex items-center gap-3 text-cine-soft">
+            <svg class="animate-spin w-6 h-6 text-cine-accent" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-base sm:text-lg">Comparing Bollywood viewer patterns &amp; genres…</span>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error-box" class="hidden max-w-3xl mx-auto p-4 rounded-2xl bg-red-500/15 border border-red-500/35 text-red-200 text-sm mb-8">
+        <span id="error-msg"></span>
+    </div>
+
+    <!-- Results Section -->
+    <section id="results-section" class="hidden space-y-10">
+
+        <!-- Header & Score Meaning Notice -->
+        <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="font-display text-2xl sm:text-3xl font-bold text-white">Your Bollywood Recommendations</h2>
+                <span id="overlap-summary" class="px-3 py-1 rounded-full text-xs font-medium"></span>
+            </div>
+
+            <div class="glass rounded-2xl p-4 sm:p-5 border border-amber-400/25 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold shrink-0">i</div>
+                <div class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                    <strong class="text-white">What does the Match Score (%) mean?</strong>
+                    This percentage is a <strong class="text-amber-300">relative recommendation score (0–100%)</strong>,
+                    not a guaranteed probability that you will like a movie. It combines how often dataset viewers liked both movies together
+                    (with small-sample smoothing), how closely the genres match your picks, and dataset popularity.
+                    <a href="/insights" class="text-amber-300 hover:underline ml-1">Learn how it works →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Recommendations State -->
+        <div id="empty-recs-box" class="hidden glass rounded-2xl p-8 text-center border border-white/10">
+            <h3 class="font-display text-xl font-bold text-white mb-2">No more Bollywood movies left to recommend</h3>
+            <p class="text-sm text-cine-soft">You have selected all available Bollywood &amp; Indian titles in the database. Remove a few movies to compare recommendations.</p>
+        </div>
+
+        <!-- #1 Top Recommendation Spotlight -->
+        <div id="top-pick-spotlight"></div>
+
+        <!-- Visual Comparison Section (Chart + Table) -->
+        <div class="glass rounded-2xl p-5 sm:p-7 border border-white/10 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-display text-xl font-bold text-white">Visual Score Comparison</h3>
+                    <p class="text-xs sm:text-sm text-cine-soft mt-1">
+                        Compare the #1 highest-ranked Bollywood pick against all other recommendations below it.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-3 text-xs">
+                    <span class="inline-flex items-center gap-1.5 text-gray-300">
+                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-cine-accent to-amber-400"></span>
+                        Viewer Overlap + Genre
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 text-gray-300">
+                        <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+                        Genre &amp; Popularity Match
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div id="comparison-chart" class="space-y-3.5"></div>
+
+            <!-- Comparison Table -->
+            <div class="overflow-x-auto pt-4 border-t border-white/10">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-wider text-cine-soft border-b border-white/10">
+                            <th class="py-2.5 px-3">Rank</th>
+                            <th class="py-2.5 px-3">Movie</th>
+                            <th class="py-2.5 px-3">Year</th>
+                            <th class="py-2.5 px-3">Genres</th>
+                            <th class="py-2.5 px-3">Viewer Overlap</th>
+                            <th class="py-2.5 px-3">Genre Match</th>
+                            <th class="py-2.5 px-3 text-right">Match Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- All Recommended Movie Cards -->
+        <div>
+            <h3 class="font-display text-xl font-bold text-white mb-4">Detailed Movie Cards</h3>
+            <div id="results-grid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

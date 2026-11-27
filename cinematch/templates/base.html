@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CineMatch Bollywood{% endblock %} – Hindi Movie Recommendations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cine: {
+                            950: '#0a0a0f',
+                            900: '#0f1117',
+                            800: '#161822',
+                            700: '#1e2130',
+                            600: '#2a2e42',
+                            500: '#3b4260',
+                            accent: '#e50914',
+                            gold: '#f5c518',
+                            soft: '#a0aec0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Outfit', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="h-full text-gray-100 font-sans antialiased flex flex-col">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cine-accent to-amber-500 flex items-center justify-center font-display font-bold text-lg text-white shadow-lg shadow-red-900/40 group-hover:scale-105 transition">
+                        C
+                    </div>
+                    <div>
+                        <span class="font-display font-bold text-xl tracking-tight">Cine<span class="text-cine-accent">Match</span></span>
+                        <span class="ml-2 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-400/15 text-amber-300 border border-amber-400/30">Bollywood</span>
+                    </div>
+                </a>
+
+                <!-- Desktop links -->
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="/" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 transition {% if page == 'home' %}active{% endif %}">
+                        Find Movies
+                    </a>
+                    <a href="/analytics" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 transition {% if page == 'analytics' %}active{% endif %}">
+                        Analytics
+                    </a>
+                    <a href="/insights" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 transition {% if page == 'insights' %}active{% endif %}">
+                        How Scores Work
+                    </a>
+                    <a href="/about" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 transition {% if page == 'about' %}active{% endif %}">
+                        About
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" type="button" aria-label="Toggle navigation menu" aria-expanded="false"
+                    class="md:hidden p-2 rounded-lg text-cine-soft hover:text-white hover:bg-white/5 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile links -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1 border-t border-white/5 pt-3">
+                <a href="/" class="block nav-link px-3 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 {% if page == 'home' %}active{% endif %}">
+                    Find Movies
+                </a>
+                <a href="/analytics" class="block nav-link px-3 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 {% if page == 'analytics' %}active{% endif %}">
+                    Analytics
+                </a>
+                <a href="/insights" class="block nav-link px-3 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 {% if page == 'insights' %}active{% endif %}">
+                    How Scores Work
+                </a>
+                <a href="/about" class="block nav-link px-3 py-2 rounded-lg text-sm font-medium text-cine-soft hover:text-white hover:bg-white/5 {% if page == 'about' %}active{% endif %}">
+                    About
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-white/10 py-8 mt-16 bg-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-cine-soft">
+            <div class="flex items-center gap-2 text-center sm:text-left">
+                <span class="font-display font-semibold text-white">CineMatch Bollywood</span>
+                <span>·</span>
+                <span>Hindi &amp; Indian Cinema Recommendation Platform</span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm">
+                <span>{{ meta.bollywood_movies }} Bollywood &amp; Indian titles</span>
+                <span>·</span>
+                <span>{{ meta.bollywood_positive }} Bollywood positive ratings</span>
+                <span>·</span>
+                <span>{{ meta.total_users }} total dataset users</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const btn = document.getElementById("mobile-menu-btn");
+            const menu = document.getElementById("mobile-menu");
+            if (btn && menu) {
+                btn.addEventListener("click", () => {
+                    const hidden = menu.classList.toggle("hidden");
+                    btn.setAttribute("aria-expanded", String(!hidden));
+                });
+            }
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Bollywood Analytics – CineMatch{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-3">
+            Database Overview
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold mb-2">Bollywood Movie Analytics</h1>
+        <p class="text-cine-soft max-w-3xl">
+            Explore the Bollywood and Indian cinema records stored inside our SQLite database and see which titles have the most positive viewer ratings (4.0 stars or higher).
+        </p>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <div class="glass rounded-2xl p-5 border border-white/10">
+            <div class="text-3xl font-display font-bold text-white">{{ meta.bollywood_movies }}</div>
+            <div class="text-sm text-cine-soft mt-1">Bollywood &amp; Indian Movies</div>
+        </div>
+        <div class="glass rounded-2xl p-5 border border-white/10">
+            <div class="text-3xl font-display font-bold text-amber-300">{{ meta.bollywood_positive }}</div>
+            <div class="text-sm text-cine-soft mt-1">Positive Ratings (≥ 4.0★)</div>
+        </div>
+        <div class="glass rounded-2xl p-5 border border-white/10">
+            <div class="text-3xl font-display font-bold text-white">{{ meta.bollywood_rated_movies }}</div>
+            <div class="text-sm text-cine-soft mt-1">Movies With Viewer Likes</div>
+        </div>
+        <div class="glass rounded-2xl p-5 border border-white/10">
+            <div class="text-3xl font-display font-bold text-cine-soft">{{ "{:,}".format(meta.total_movies) }}</div>
+            <div class="text-sm text-cine-soft mt-1">Total Movies in Full DB</div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Most Positively Rated Bollywood Movies -->
+        <div>
+            <h2 class="font-display text-xl font-bold mb-4">Bollywood &amp; Indian Movies by Positive Ratings</h2>
+            <div class="glass rounded-2xl border border-white/10 overflow-hidden">
+                <div class="divide-y divide-white/5">
+                    {% for m in popular %}
+                    <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.03] transition">
+                        <div class="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold shrink-0 {% if loop.index == 1 %}bg-amber-400 text-black{% else %}bg-cine-700 text-cine-soft{% endif %}">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-sm text-white truncate">
+                                {{ m.display_title }}
+                                {% if m.release_year %}<span class="text-xs text-cine-soft">({{ m.release_year }})</span>{% endif %}
+                            </div>
+                            <div class="text-xs text-cine-soft truncate">
+                                {{ m.genre_list[:3]|join(' · ') if m.genre_list else 'Genre N/A' }} · <span class="text-amber-300/80">{{ m.industry_tag }}</span>
+                            </div>
+                        </div>
+                        <div class="text-xs sm:text-sm font-semibold whitespace-nowrap {% if m.pos_count > 0 %}text-cine-gold{% else %}text-cine-soft{% endif %}">
+                            {% if m.pos_count == 1 %}1 like{% elif m.pos_count > 1 %}{{ m.pos_count }} likes{% else %}No likes{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bollywood Genre distribution -->
+        <div class="space-y-6">
+            <div>
+                <h2 class="font-display text-xl font-bold mb-4">Bollywood Genre Breakdown</h2>
+                <div class="glass rounded-2xl border border-white/10 p-5 space-y-3.5">
+                    {% set max_count = genres[0].count if genres else 1 %}
+                    {% for g in genres %}
+                    <div>
+                        <div class="flex justify-between text-sm mb-1.5">
+                            <span class="font-medium text-white">{{ g.genre }}</span>
+                            <span class="text-cine-soft">{{ g.count }} movie{{ 's' if g.count != 1 else '' }}</span>
+                        </div>
+                        <div class="h-2.5 bg-cine-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cine-accent to-amber-400 rounded-full"
+                                 style="width: {{ (g.count / max_count * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl border border-white/10 p-5 text-sm text-cine-soft space-y-2">
+                <h3 class="font-display font-bold text-white text-base">Dataset Note</h3>
+                <p>
+                    The underlying SQLite database comes from MovieLens Latest Small ({{ "{:,}".format(meta.total_movies) }} total movies across {{ meta.total_users }} users).
+                    CineMatch filters out unrelated Hollywood films so only the {{ meta.bollywood_movies }} Bollywood and Indian cinema titles appear in searches and recommendations.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
